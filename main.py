@@ -1,3 +1,4 @@
+import json
 import os
 from fastapi import FastAPI, HTTPException
 import alphashape
@@ -12,29 +13,25 @@ load_dotenv()
 app = FastAPI()
 
 @app.post("/2d_concave_hull/")
-def get_2d_concave_hull(points: Points, alpha: float = 0.0):
+def get_2d_concave_hull(points: Points, token: str, alpha: float = 0.0):
+	
+	if not os.getenv("VERIFICATION_TOKEN") in token:
+		raise HTTPException(status_code=403, detail="Forbidden access")
+	
+	if not token or not points.points:
+		raise HTTPException(status_code=400, detail="Invalid request")
+	
 	try:
+		print(f"Received {len(points.points)} points")
+		print(f"Alpha: {alpha}")
+		
 		# Convert the list of points to a numpy array
 		np_points = np.array(points.points)
 		# Generate the alpha shape
 		concave_hull = alphashape.alphashape(np_points, alpha)
 		# Extract the edges of the alpha shape
-		#edges = list(mapping(concave_hull)['coordinates'])
-		if concave_hull.geom_type == "GeometryCollection":
-			# Get the first geometry
-			concave_hull = concave_hull[0]
+		edges = list(mapping(concave_hull)['coordinates'])
 
-		edges = []
-		if concave_hull.geom_type == "Polygon":
-			edges = list(concave_hull.exterior.coords)
-		elif concave_hull.geom_type == "MultiPolygon":
-			for polygon in concave_hull:
-				edges.append(list(polygon.exterior.coords))
-		elif concave_hull.geom_type == "LineString":
-			edges = list(concave_hull.coords)
-		elif concave_hull.geom_type == "MultiLineString":
-			for line in concave_hull:
-				edges.append(list(line.coords))
 		return {"edges": edges}
 	except Exception as e:
 		# Get the error message
