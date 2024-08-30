@@ -15,7 +15,7 @@ This project provides a simple API built with FastAPI that takes a list of 2D po
 
 ### Request
 
-```json
+```curl
 POST /2d_concave_hull/?token=your_verification_token&alpha=0
 {
   "points": [
@@ -32,10 +32,10 @@ POST /2d_concave_hull/?token=your_verification_token&alpha=0
 ```json
 {
   "edges": [
-    [(0.0, 0.0), (1.0, 0.0)],
-    [(1.0, 0.0), (1.0, 1.0)],
-    [(1.0, 1.0), (0.0, 1.0)],
-    [(0.0, 1.0), (0.0, 0.0)]
+    [[0.0, 0.0], [1.0, 0.0]],
+    [[1.0, 0.0], [1.0, 1.0]],
+    [[1.0, 1.0], [0.0, 1.0]],
+    [[0.0, 1.0], [0.0, 0.0]]
   ]
 }
 ```
